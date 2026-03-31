@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Omniguard - AI Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        background: '#0f172a',
+                        foreground: '#f8fafc',
+                        card: '#1e293b',
+                        primary: '#3b82f6',
+                        secondary: '#334155',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0f172a; color: #f8fafc; min-height: 100vh; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    </style>
+</head>
+<body class="dark">
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+        
+        // Knowledge Base
+        const knowledgeBase = {
+            documents: [
+                { id: 1, name: "Pricing Guide", content: "Basic Plan: $29/mo. Pro Plan: $99/mo. Enterprise: Custom pricing." },
+                { id: 2, name: "Refund Policy", content: "Full refund within 30 days. Processing takes 5-7 business days." },
+                { id: 3, name: "Shipping Times", content: "Standard: 5-7 days. Express: 2-3 days. Overnight: next day." },
+                { id: 4, name: "Account Security", content: "We support 2FA via Google Authenticator or SMS." }
+            ],
+            search(query) {
+                const q = query.toLowerCase();
+                return this.documents.filter(doc => 
+                    doc.content.toLowerCase().includes(q) || doc.name.toLowerCase().includes(q)
+                );
+            }
+        };
+        
+        // User Info
+        const currentUser = { name: "Isaac Njine", email: "isaacnjine741@gmail.com", role: "Admin" };
+        
+        // Analytics Data
+        const analyticsData = {
+            summary: {
+                totalInquiries: { value: 325, change: 12 },
+                aiResolved: { value: 280, change: 8 },
+                humanEscalations: { value: 45, change: -15 },
+                successRate: { value: 86, change: 5 },
+            },
+            dailyInquiries: [
+                { day: 'Mon', inquiries: 45, resolved: 42 },
+                { day: 'Tue', inquiries: 52, resolved: 48 },
+                { day: 'Wed', inquiries: 38, resolved: 35 },
+                { day: 'Thu', inquiries: 67, resolved: 58 },
+                { day: 'Fri', inquiries: 55, resolved: 50 },
+                { day: 'Sat', inquiries: 28, resolved: 26 },
+                { day: 'Sun', inquiries: 22, resolved: 21 }
+            ],
+            resolutionRatio: [
+                { name: 'AI Resolved', value: 280 },
+                { name: 'Human Escalated', value: 45 }
+            ]
+        };
+        
+        // Security Logs
+        const securityLogs = [
+            { id: 1, type: 'success', message: 'User login successful', timestamp: '2024-01-15 09:23:45', user: 'isaac@omniguard.com' },
+            { id: 2, type: 'info', message: 'API key validated', timestamp: '2024-01-15 09:24:12', user: 'System' },
+            { id: 3, type: 'warning', message: 'Multiple login attempts', timestamp: '2024-01-15 09:25:33', user: 'unknown@ip.gov' },
+            { id: 4, type: 'info', message: 'Knowledge base updated', timestamp: '2024-01-15 09:26:01', user: 'admin@omniguard.com' },
+            { id: 5, type: 'error', message: 'Failed payment attempt', timestamp: '2024-01-15 09:27:18', user: 'user42@email.com' },
+            { id: 6, type: 'success', message: 'Refund processed', timestamp: '2024-01-15 09:28:44', user: 'System' },
+        ];
+        
+        // Sidebar
+        const Sidebar = ({ activePage, setActivePage }) => {
+            const menuItems = [
+                { id: 'chat', icon: 'fa-comments', label: 'Live Agent' },
+                { id: 'knowledge', icon: 'fa-book', label: 'Knowledge Base' },
+                { id: 'security', icon: 'fa-shield-halved', label: 'Security Logs' },
+                { id: 'analytics', icon: 'fa-chart-bar', label: 'Analytics' },
+                { id: 'settings', icon: 'fa-gear', label: 'Settings' },
+            ];
+            return (
+                <aside className="w-64 bg-gray-900 border-r border-gray-800 flex flex-col">
+                    <div className="h-16 flex items-center px-6 border-b border-gray-800">
+                        <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center mr-3">
+                            <i className="fa-solid fa-robot text-white text-sm"></i>
+                        </div>
+                        <span className="text-lg font-bold text-white">Omniguard</span>
+                    </div>
+                    <nav className="flex-1 p-4 space-y-2">
+                        {menuItems.map(item => (
+                            <button key={item.id} onClick={() => setActivePage(item.id)}
+                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${activePage === item.id ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}>
+                                <i className={`fa-solid ${item.icon} w-5`}></i>
+                                {item.label}
+                            </button>
+                        ))}
+                    </nav>
+                    <div className="p-4 border-t border-gray-800">
+                        <div className="flex items-center gap-3 p-3 bg-gray-800 rounded-xl">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold">
+                                {currentUser.name.charAt(0)}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-white truncate">{currentUser.name}</p>
+                                <p className="text-xs text-gray-400 truncate">{currentUser.email}</p>
+                            </div>
+                            <button className="text-gray-400 hover:text-white"><i className="fa-solid fa-right-from-bracket"></i></button>
+                        </div>
+                    </div>
+                </aside>
+            );
+        };
+        
+        // AI Response System
+        const getAIResponse = (input, kbResults) => {
+            const query = input.toLowerCase();
+            
+            // Guardrails - block dangerous requests
+            const dangerous = ['hack', 'crack', 'bypass', 'steal', 'delete all', 'illegal'];
+            if (dangerous.some(d => query.includes(d))) {
+                return "I can't help with that request. Please contact a human manager for security-related concerns.";
+            }
+            
+            // Check Knowledge Base first
+            if (kbResults.length > 0) {
+                return kbResults[0].content;
+            }
+            
+            // Order Status
+            if (query.includes('order status') || query.includes('track order') || query.includes('where is my order')) {
+                const statuses = ['SHIPPED - Expected delivery in 2-3 business days', 'PROCESSING - Preparing for shipment', 'DELIVERED - Successfully delivered', 'PENDING - Awaiting shipment'];
+                return `I'd be happy to check that for you! Based on our system, your order #${Math.floor(Math.random() * 90000) + 10000} is currently: ${statuses[Math.floor(Math.random() * statuses.length)]}\n\nWould you like more details about shipping times?`;
+            }
+            
+            // Refund
+            if (query.includes('refund') || query.includes('money back') || query.includes('cancel order')) {
+                return `I can help with refunds!\n\nOur refund policy:\n• Full refund within 30 days\n• Processing takes 5-7 business days\n• Refunds go to original payment method\n\nTo process a refund, I'll need your order ID and reason. Would you like to proceed?`;
+            }
+            
+            // Pricing
+            if (query.includes('pricing') || query.includes('price') || query.includes('cost') || query.includes('plans') || query.includes('subscription')) {
+                return `Here's our pricing structure:\n\n• Basic Plan: $29/month\n  - 1,000 AI conversations\n  - Basic support\n\n• Pro Plan: $99/month\n  - Unlimited conversations\n  - Advanced analytics\n  - Priority support\n\n• Enterprise: Custom pricing\n  - Dedicated support\n  - Custom integrations\n\nWhich plan interests you?`;
+            }
+            
+            // Shipping
+            if (query.includes('shipping') || query.includes('delivery') || query.includes('shipping time')) {
+                return `Here are our shipping options:\n\n• Standard: 5-7 business days\n• Express: 2-3 business days\n• Overnight: Next business day\n• International: 10-14 business days\n\nIs there anything else you'd like to know?`;
+            }
+            
+            // Account
+            if (query.includes('account') || query.includes('login') || query.includes('password') || query.includes('profile')) {
+                return `For account-related issues, I can help with:\n\n• Password reset\n• Account verification\n• Profile updates\n• Security settings\n\nWhat specific issue are you experiencing?`;
+            }
+            
+            // Security
+            if (query.includes('security') || query.includes('hack') || query.includes('suspicious') || query.includes('2fa')) {
+                return `Security is our top priority!\n\nAvailable security features:\n• Two-Factor Authentication (2FA)\n• Password requirements: 12+ characters, mixed case, numbers\n• Session timeout after 30 minutes\n\nWould you like to enable any of these features?`;
+            }
+            
+            // Technical Support
+            if (query.includes('error') || query.includes('bug') || query.includes('not working') || query.includes('technical')) {
+                return `I can help troubleshoot technical issues.\n\nCommon solutions:\n1. Clear browser cache\n2. Disable VPN\n3. Try a different browser\n4. Check our status page for outages\n\nIf the issue persists, I can escalate to our technical team. What specific error are you seeing?`;
+            }
+            
+            // Billing
+            if (query.includes('billing') || query.includes('payment') || query.includes('invoice') || query.includes('charge')) {
+                return `I can help with billing concerns:\n\n• Payment methods\n• Invoice history\n• Upgrade/downgrade plans\n• Cancel subscription\n\nWhat billing matter can I assist you with?`;
+            }
+            
+            // Greetings
+            if (query.includes('hello') || query.includes('hi') || query.includes('hey') || query.includes('good morning') || query.includes('good afternoon')) {
+                return `Hello! I'm your Omniguard AI Assistant. 😊\n\nI can help you with:\n• Order status and tracking\n• Refunds and cancellations\n• Pricing and plans\n• Technical support\n• Billing inquiries\n• Account management\n• Security settings\n\nWhat can I help you with today?`;
+            }
+            
+            // Thanks
+            if (query.includes('thank') || query.includes('thanks')) {
+                return `You're welcome! 😊 Is there anything else I can help you with?`;
+            }
+            
+            // Help
+            if (query.includes('help') || query.includes('what can you do') || query.includes('capabilities')) {
+                return `I'm Omniguard's AI assistant, here to help! I can assist with:\n\n📦 Orders: Check status, track, cancel\n💰 Refunds: Process, inquire about status\n💳 Billing: Payments, invoices, plans\n🔐 Security: 2FA, passwords, settings\n🔧 Technical: Troubleshooting, errors\n📚 Knowledge: Our policies and guides\n\nJust type your question and I'll do my best to help!`;
+            }
+            
+            // Default intelligent response
+            return `I understand you're asking about "${input}". As Omniguard's AI assistant, I can help with orders, refunds, pricing, technical support, and more.\n\nCould you provide more details about what you need help with? For example:\n• "Check my order status"
+• "Process a refund"
+• "What are your pricing plans?"
+• "I have a technical issue"`;
+        };
+        
+        // Chat Page
+        const ChatPage = () => {
+            const [messages, setMessages] = useState([
+                { id: 1, role: 'assistant', content: "Hello! I'm your Omniguard AI Assistant. 😊\n\nI can help you with orders, refunds, pricing, technical support, billing, and more. Just type your question and I'll assist you!", timestamp: new Date() }
+            ]);
+            const [input, setInput] = useState('');
+            const [isTyping, setIsTyping] = useState(false);
+            const chatEndRef = useRef(null);
+            
+            useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
+            
+            const sendMessage = () => {
+                if (!input.trim()) return;
+                const userMsg = { id: Date.now(), role: 'user', content: input, timestamp: new Date() };
+                setMessages(prev => [...prev, userMsg]);
+                setInput('');
+                setIsTyping(true);
+                
+                setTimeout(() => {
+                    const kbResults = knowledgeBase.search(input);
+                    const response = getAIResponse(input, kbResults);
+                    setMessages(prev => [...prev, { id: Date.now() + 1, role: 'assistant', content: response, timestamp: new Date() }]);
+                    setIsTyping(false);
+                }, 1200);
+            };
+            
+            return (
+                <div className="flex flex-col h-full bg-gray-950">
+                    <header className="h-16 border-b border-gray-800 flex items-center px-6 bg-gray-900/50">
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-blue-600/20 flex items-center justify-center">
+                                <i className="fa-solid fa-comments text-blue-500"></i>
+                            </div>
+                            <div>
+                                <h2 className="text-lg font-semibold text-white">Live Agent</h2>
+                                <p className="text-xs text-gray-400">AI-powered customer support</p>
+                            </div>
+                        </div>
+                        <div className="ml-auto flex items-center gap-2">
+                            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                            <span className="text-sm text-gray-400">Online</span>
+                        </div>
+                    </header>
+                    <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                        {messages.map(msg => (
+                            <div key={msg.id} className={`flex gap-4 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                {msg.role === 'assistant' && (
+                                    <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center flex-shrink-0">
+                                        <i className="fa-solid fa-robot text-white text-sm"></i>
+                                    </div>
+                                )}
+                                <div className={`max-w-[70%] p-4 rounded-2xl ${msg.role === 'user' ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-100'}`}>
+                                    <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                                    <p className="text-xs text-gray-500 mt-2">{msg.timestamp.toLocaleTimeString()}</p>
+                                </div>
+                                {msg.role === 'user' && (
+                                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0 text-white font-bold text-sm">
+                                        {currentUser.name.charAt(0)}
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                        {/* Typing animation */}
+                        {isTyping && (
+                            <div className="flex gap-4 justify-start">
+                                <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
+                                    <i className="fa-solid fa-robot text-white text-sm"></i>
+                                </div>
+                                <div className="bg-gray-800 p-4 rounded-2xl">
+                                    <div className="flex gap-1">
+                                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay:'150ms'}}></div>
+                                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay:'300ms'}}></div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        <div ref={chatEndRef}></div>
+                    </div>
+                    <div className="p-4 border-t border-gray-800 bg-gray-900/50">
+                        <div className="flex gap-3">
+                            <input type="text" value={input} onChange={e => setInput(e.target.value)} onKeyPress={e => e.key === 'Enter' && sendMessage()}
+                                placeholder="Type your message..." className="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500" />
+                            <button onClick={sendMessage} className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors">
+                                <i className="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+        
+        // Knowledge Page
+        const KnowledgePage = () => {
+            const [docs, setDocs] = useState(knowledgeBase.documents);
+            const [newDocName, setNewDocName] = useState('');
+            const [newDocContent, setNewDocContent] = useState('');
+            
+            const addDoc = () => {
+                if (!newDocName || !newDocContent) return;
+                setDocs([...docs, { id: Date.now(), name: newDocName, content: newDocContent }]);
+                setNewDocName('');
+                setNewDocContent('');
+            };
+            
+            return (
+                <div className="flex flex-col h-full bg-gray-950">
+                    <header className="h-16 border-b border-gray-800 flex items-center px-6 bg-gray-900/50">
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-blue-600/20 flex items-center justify-center">
+                                <i className="fa-solid fa-book text-blue-500"></i>
+                            </div>
+                            <div>
+                                <h2 className="text-lg font-semibold text-white">Knowledge Base</h2>
+                                <p className="text-xs text-gray-400">Manage AI training documents</p>
+                            </div>
+                        </div>
+                    </header>
+                    <div className="flex-1 overflow-y-auto p-6">
+                        <div className="grid grid-cols-2 gap-6">
+                            <div className="p-6 bg-gray-900 border border-gray-800 rounded-xl">
+                                <h3 className="text-sm font-semibold text-white mb-4">Add New Document</h3>
+                                <input type="text" placeholder="Document name" value={newDocName} onChange={e => setNewDocName(e.target.value)}
+                                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white mb-3" />
+                                <textarea placeholder="Document content..." value={newDocContent} onChange={e => setNewDocContent(e.target.value)} rows={3}
+                                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white mb-3" />
+                                <button onClick={addDoc} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm">Save Document</button>
+                            </div>
+                            <div className="space-y-3">
+                                <h3 className="text-sm font-semibold text-white">Uploaded Documents ({docs.length})</h3>
+                                {docs.map(doc => (
+                                    <div key={doc.id} className="flex items-start gap-4 p-4 bg-gray-900 border border-gray-800 rounded-xl">
+                                        <div className="w-10 h-10 rounded-lg bg-blue-600/20 flex items-center justify-center">
+                                            <i className="fa-solid fa-file text-blue-500"></i>
+                                        </div>
+                                        <div className="flex-1">
+                                            <h4 className="text-sm font-semibold text-white">{doc.name}</h4>
+                                            <p className="text-xs text-gray-400 mt-1">{doc.content.substring(0, 80)}...</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+        
+        // Security Page
+        const SecurityPage = () => (
+            <div className="flex flex-col h-full bg-gray-950">
+                <header className="h-16 border-b border-gray-800 flex items-center px-6 bg-gray-900/50">
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-blue-600/20 flex items-center justify-center">
+                            <i className="fa-solid fa-shield-halved text-blue-500"></i>
+                        </div>
+                        <div>
+                            <h2 className="text-lg font-semibold text-white">Security Logs</h2>
+                            <p className="text-xs text-gray-400">Monitor system events</p>
+                        </div>
+                    </div>
+                </header>
+                <div className="flex-1 overflow-y-auto p-6">
+                    <div className="grid grid-cols-4 gap-4 mb-6">
+                        <div className="p-4 bg-gray-900 border border-gray-800 rounded-xl text-center">
+                            <p className="text-2xl font-bold text-white">{securityLogs.length}</p>
+                            <p className="text-sm text-gray-400">Total Events</p>
+                        </div>
+                        <div className="p-4 bg-gray-900 border border-gray-800 rounded-xl text-center">
+                            <p className="text-2xl font-bold text-blue-400">{securityLogs.filter(l => l.type === 'info').length}</p>
+                            <p className="text-sm text-gray-400">Info</p>
+                        </div>
+                        <div className="p-4 bg-gray-900 border border-gray-800 rounded-xl text-center">
+                            <p className="text-2xl font-bold text-yellow-400">{securityLogs.filter(l => l.type === 'warning').length}</p>
+                            <p className="text-sm text-gray-400">Warnings</p>
+                        </div>
+                        <div className="p-4 bg-gray-900 border border-gray-800 rounded-xl text-center">
+                            <p className="text-2xl font-bold text-red-400">{securityLogs.filter(l => l.type === 'error').length}</p>
+                            <p className="text-sm text-gray-400">Errors</p>
+                        </div>
+                    </div>
+                    <div className="space-y-2">
+                        {securityLogs.map(log => (
+                            <div key={log.id} className="flex items-center gap-4 p-4 bg-gray-900 border border-gray-800 rounded-xl">
+                                <i className={`fa-solid ${log.type === 'error' ? 'fa-circle-exclamation' : log.type === 'warning' ? 'fa-triangle-exclamation' : log.type === 'success' ? 'fa-check-circle' : 'fa-circle-info'} ${log.type === 'error' ? 'text-red-400' : log.type === 'warning' ? 'text-yellow-400' : log.type === 'success' ? 'text-green-400' : 'text-blue-400'}`}></i>
+                                <div className="flex-1">
+                                    <p className="text-sm font-medium text-white">{log.message}</p>
+                                    <p className="text-xs text-gray-500 mt-1">{log.timestamp} - {log.user}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+        
+        // Analytics Page
+        const AnalyticsPage = () => {
+            const barRef = useRef(null);
+            const pieRef = useRef(null);
+            
+            useEffect(() => {
+                if (typeof Chart === 'undefined') return;
+                if (barRef.current) barRef.current.destroy();
+                if (pieRef.current) pieRef.current.destroy();
+                
+                const barCtx = document.getElementById('barChart');
+                if (barCtx) {
+                    barRef.current = new Chart(barCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: analyticsData.dailyInquiries.map(d => d.day),
+                            datasets: [{
+                                label: 'Inquiries',
+                                data: analyticsData.dailyInquiries.map(d => d.inquiries),
+                                backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                                borderRadius: 4
+                            }, {
+                                label: 'Resolved',
+                                data: analyticsData.dailyInquiries.map(d => d.resolved),
+                                backgroundColor: 'rgba(34, 197, 94, 0.8)',
+                                borderRadius: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { labels: { color: '#9ca3af' } } },
+                            scales: { x: { ticks: { color: '#9ca3af' }, grid: { color: '#374151' } }, y: { ticks: { color: '#9ca3af' }, grid: { color: '#374151' } } }
+                        }
+                    });
+                }
+                
+                const pieCtx = document.getElementById('pieChart');
+                if (pieCtx) {
+                    pieRef.current = new Chart(pieCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: analyticsData.resolutionRatio.map(d => d.name),
+                            datasets: [{
+                                data: analyticsData.resolutionRatio.map(d => d.value),
+                                backgroundColor: ['#3b82f6', '#ef4444'],
+                                borderWidth: 0
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { position: 'bottom', labels: { color: '#9ca3af' } } }
+                        }
+                    });
+                }
+            }, []);
+            
+            return (
+                <div className="flex flex-col h-full bg-gray-950">
+                    <header className="h-16 border-b border-gray-800 flex items-center px-6 bg-gray-900/50">
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-blue-600/20 flex items-center justify-center">
+                                <i className="fa-solid fa-chart-bar text-blue-500"></i>
+                            </div>
+                            <div>
+                                <h2 className="text-lg font-semibold text-white">Analytics Dashboard</h2>
+                                <p className="text-xs text-gray-400">AI performance metrics</p>
+                            </div>
+                        </div>
+                    </header>
+                    <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                        <div className="grid grid-cols-4 gap-4">
+                            <div className="p-4 bg-gray-900 border border-gray-800 rounded-xl">
+                                <div className="flex items-center justify-between mb-3">
+                                    <div className="w-10 h-10 rounded-lg bg-blue-600/20 flex items-center justify-center"><i className="fa-solid fa-comments text-blue-500"></i></div>
+                                    <span className="text-xs text-green-400 font-medium">+{analyticsData.summary.totalInquiries.change}%</span>
+                                </div>
+                                <p className="text-2xl font-bold text-white">{analyticsData.summary.totalInquiries.value}</p>
+                                <p className="text-sm text-gray-400">Total Inquiries</p>
+                            </div>
+                            <div className="p-4 bg-gray-900 border border-gray-800 rounded-xl">
+                                <div className="flex items-center justify-between mb-3">
+                                    <div className="w-10 h-10 rounded-lg bg-green-600/20 flex items-center justify-center"><i className="fa-solid fa-check-circle text-green-500"></i></div>
+                                    <span className="text-xs text-green-400 font-medium">+{analyticsData.summary.aiResolved.change}%</span>
+                                </div>
+                                <p className="text-2xl font-bold text-white">{analyticsData.summary.aiResolved.value}</p>
+                                <p className="text-sm text-gray-400">AI Resolved</p>
+                            </div>
+                            <div className="p-4 bg-gray-900 border border-gray-800 rounded-xl">
+                                <div className="flex items-center justify-between mb-3">
+                                    <div className="w-10 h-10 rounded-lg bg-red-600/20 flex items-center justify-center"><i className="fa-solid fa-exclamation-triangle text-red-500"></i></div>
+                                    <span className="text-xs text-green-400 font-medium">{analyticsData.summary.humanEscalations.change}%</span>
+                                </div>
+                                <p className="text-2xl font-bold text-white">{analyticsData.summary.humanEscalations.value}</p>
+                                <p className="text-sm text-gray-400">Human Escalations</p>
+                            </div>
+                            <div className="p-4 bg-gray-900 border border-gray-800 rounded-xl">
+                                <div className="flex items-center justify-between mb-3">
+                                    <div className="w-10 h-10 rounded-lg bg-purple-600/20 flex items-center justify-center"><i className="fa-solid fa-percentage text-purple-500"></i></div>
+                                    <span className="text-xs text-green-400 font-medium">+{analyticsData.summary.successRate.change}%</span>
+                                </div>
+                                <p className="text-2xl font-bold text-white">{analyticsData.summary.successRate.value}%</p>
+                                <p className="text-sm text-gray-400">Success Rate</p>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-6">
+                            <div className="p-6 bg-gray-900 border border-gray-800 rounded-xl">
+                                <h3 className="text-lg font-semibold text-white mb-4">Daily Inquiries</h3>
+                                <div style={{ height: '250px' }}><canvas id="barChart"></canvas></div>
+                            </div>
+                            <div className="p-6 bg-gray-900 border border-gray-800 rounded-xl">
+                                <h3 className="text-lg font-semibold text-white mb-4">Resolution Ratio</h3>
+                                <div style={{ height: '250px' }}><canvas id="pieChart"></canvas></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+        
+        // Settings Page
+        const SettingsPage = () => {
+            const [darkMode, setDarkMode] = useState(true);
+            return (
+                <div className="flex flex-col h-full bg-gray-950">
+                    <header className="h-16 border-b border-gray-800 flex items-center px-6 bg-gray-900/50">
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-blue-600/20 flex items-center justify-center">
+                                <i className="fa-solid fa-gear text-blue-500"></i>
+                            </div>
+                            <div>
+                                <h2 className="text-lg font-semibold text-white">Settings</h2>
+                                <p className="text-xs text-gray-400">Configure dashboard</p>
+                            </div>
+                        </div>
+                    </header>
+                    <div className="flex-1 overflow-y-auto p-6">
+                        <div className="max-w-3xl space-y-6">
+                            <div className="p-6 bg-gray-900 border border-gray-800 rounded-xl">
+                                <div className="flex items-center gap-3 mb-4"><i className="fa-solid fa-moon text-blue-500"></i><h3 className="text-lg font-semibold text-white">Appearance</h3></div>
+                                <div className="flex items-center justify-between">
+                                    <div><p className="text-sm font-medium text-white">Dark Mode</p><p className="text-xs text-gray-400">Use dark theme</p></div>
+                                    <button onClick={() => setDarkMode(!darkMode)} className={`w-12 h-6 rounded-full relative ${darkMode ? 'bg-blue-600' : 'bg-gray-700'}`}>
+                                        <div className={`absolute w-5 h-5 rounded-full bg-white top-0.5 transition-transform ${darkMode ? 'right-0.5' : 'left-0.5'}`}></div>
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="p-6 bg-gray-900 border border-gray-800 rounded-xl">
+                                <div className="flex items-center gap-3 mb-4"><i className="fa-solid fa-key text-blue-500"></i><h3 className="text-lg font-semibold text-white">API Configuration</h3></div>
+                                <div><label className="text-sm font-medium text-white">Gemini API Key</label><div className="flex gap-2 mt-2"><input type="password" placeholder="Enter your API key" className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white" /><button className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm">Save</button></div></div>
+                            </div>
+                            <div className="p-6 bg-gray-900 border border-gray-800 rounded-xl">
+                                <div className="flex items-center gap-3 mb-4"><i className="fa-solid fa-lock text-blue-500"></i><h3 className="text-lg font-semibold text-white">Security</h3></div>
+                                <div className="flex items-center justify-between"><div><p className="text-sm font-medium text-white">Two-Factor Authentication</p><p className="text-xs text-gray-400">Add extra security</p></div><button className="px-4 py-2 bg-gray-700 text-white rounded-lg text-sm">Enable</button></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+        
+        // Main App
+        const App = () => {
+            const [activePage, setActivePage] = useState('chat');
+            const renderPage = () => {
+                switch(activePage) {
+                    case 'chat': return <ChatPage />;
+                    case 'knowledge': return <KnowledgePage />;
+                    case 'security': return <SecurityPage />;
+                    case 'analytics': return <AnalyticsPage />;
+                    case 'settings': return <SettingsPage />;
+                    default: return <ChatPage />;
+                }
+            };
+            return (
+                <div className="flex h-screen bg-gray-950">
+                    <Sidebar activePage={activePage} setActivePage={setActivePage} />
+                    <main className="flex-1 flex flex-col overflow-hidden">{renderPage()}</main>
+                </div>
+            );
+        };
+        
+        // Render App
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>
