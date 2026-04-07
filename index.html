@@ -90,48 +90,6 @@
             { id: 6, type: 'success', message: 'Refund processed', timestamp: '2024-01-15 09:28:44', user: 'System' },
         ];
         
-        // Sidebar
-        const Sidebar = ({ activePage, setActivePage }) => {
-            const menuItems = [
-                { id: 'chat', icon: 'fa-comments', label: 'Live Agent' },
-                { id: 'knowledge', icon: 'fa-book', label: 'Knowledge Base' },
-                { id: 'security', icon: 'fa-shield-halved', label: 'Security Logs' },
-                { id: 'analytics', icon: 'fa-chart-bar', label: 'Analytics' },
-                { id: 'settings', icon: 'fa-gear', label: 'Settings' },
-            ];
-            return (
-                <aside className="w-64 bg-gray-900 border-r border-gray-800 flex flex-col">
-                    <div className="h-16 flex items-center px-6 border-b border-gray-800">
-                        <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center mr-3">
-                            <i className="fa-solid fa-robot text-white text-sm"></i>
-                        </div>
-                        <span className="text-lg font-bold text-white">Omniguard</span>
-                    </div>
-                    <nav className="flex-1 p-4 space-y-2">
-                        {menuItems.map(item => (
-                            <button key={item.id} onClick={() => setActivePage(item.id)}
-                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${activePage === item.id ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}>
-                                <i className={`fa-solid ${item.icon} w-5`}></i>
-                                {item.label}
-                            </button>
-                        ))}
-                    </nav>
-                    <div className="p-4 border-t border-gray-800">
-                        <div className="flex items-center gap-3 p-3 bg-gray-800 rounded-xl">
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold">
-                                {currentUser.name.charAt(0)}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-white truncate">{currentUser.name}</p>
-                                <p className="text-xs text-gray-400 truncate">{currentUser.email}</p>
-                            </div>
-                            <button className="text-gray-400 hover:text-white"><i className="fa-solid fa-right-from-bracket"></i></button>
-                        </div>
-                    </div>
-                </aside>
-            );
-        };
-        
         // AI Response System
         const getAIResponse = (input, kbResults) => {
             const query = input.toLowerCase();
@@ -238,32 +196,32 @@
             
             return (
                 <div className="flex flex-col h-full bg-gray-950">
-                    <header className="h-16 border-b border-gray-800 flex items-center px-6 bg-gray-900/50">
+                    <header className="h-16 border-b border-gray-800 flex items-center px-4 md:px-6 bg-gray-900/50">
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-lg bg-blue-600/20 flex items-center justify-center">
                                 <i className="fa-solid fa-comments text-blue-500"></i>
                             </div>
                             <div>
                                 <h2 className="text-lg font-semibold text-white">Live Agent</h2>
-                                <p className="text-xs text-gray-400">AI-powered customer support</p>
+                                <p className="text-xs text-gray-400 hidden sm:block">AI-powered customer support</p>
                             </div>
                         </div>
                         <div className="ml-auto flex items-center gap-2">
                             <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                            <span className="text-sm text-gray-400">Online</span>
+                            <span className="text-sm text-gray-400 hidden sm:inline">Online</span>
                         </div>
                     </header>
-                    <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                    <div className="flex-1 overflow-y-auto p-3 md:p-6 space-y-4">
                         {messages.map(msg => (
-                            <div key={msg.id} className={`flex gap-4 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                            <div key={msg.id} className={`flex gap-2 md:gap-4 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                                 {msg.role === 'assistant' && (
                                     <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center flex-shrink-0">
                                         <i className="fa-solid fa-robot text-white text-sm"></i>
                                     </div>
                                 )}
-                                <div className={`max-w-[70%] p-4 rounded-2xl ${msg.role === 'user' ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-100'}`}>
+                                <div className={`max-w-[85%] md:max-w-[70%] p-3 md:p-4 rounded-2xl ${msg.role === 'user' ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-100'}`}>
                                     <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-                                    <p className="text-xs text-gray-500 mt-2">{msg.timestamp.toLocaleTimeString()}</p>
+                                    <p className="text-xs text-gray-500 mt-2 hidden sm:block">{msg.timestamp.toLocaleTimeString()}</p>
                                 </div>
                                 {msg.role === 'user' && (
                                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0 text-white font-bold text-sm">
@@ -289,11 +247,11 @@
                         )}
                         <div ref={chatEndRef}></div>
                     </div>
-                    <div className="p-4 border-t border-gray-800 bg-gray-900/50">
+                    <div className="p-3 md:p-4 border-t border-gray-800 bg-gray-900/50">
                         <div className="flex gap-3">
                             <input type="text" value={input} onChange={e => setInput(e.target.value)} onKeyPress={e => e.key === 'Enter' && sendMessage()}
                                 placeholder="Type your message..." className="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500" />
-                            <button onClick={sendMessage} className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors">
+                            <button onClick={sendMessage} className="px-4 md:px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors">
                                 <i className="fa-solid fa-paper-plane"></i>
                             </button>
                         </div>
@@ -317,20 +275,20 @@
             
             return (
                 <div className="flex flex-col h-full bg-gray-950">
-                    <header className="h-16 border-b border-gray-800 flex items-center px-6 bg-gray-900/50">
+                    <header className="h-16 border-b border-gray-800 flex items-center px-4 md:px-6 bg-gray-900/50">
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-lg bg-blue-600/20 flex items-center justify-center">
                                 <i className="fa-solid fa-book text-blue-500"></i>
                             </div>
                             <div>
                                 <h2 className="text-lg font-semibold text-white">Knowledge Base</h2>
-                                <p className="text-xs text-gray-400">Manage AI training documents</p>
+                                <p className="text-xs text-gray-400 hidden sm:block">Manage AI training documents</p>
                             </div>
                         </div>
                     </header>
-                    <div className="flex-1 overflow-y-auto p-6">
-                        <div className="grid grid-cols-2 gap-6">
-                            <div className="p-6 bg-gray-900 border border-gray-800 rounded-xl">
+                    <div className="flex-1 overflow-y-auto p-4 md:p-6">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+                            <div className="p-4 md:p-6 bg-gray-900 border border-gray-800 rounded-xl">
                                 <h3 className="text-sm font-semibold text-white mb-4">Add New Document</h3>
                                 <input type="text" placeholder="Document name" value={newDocName} onChange={e => setNewDocName(e.target.value)}
                                     className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white mb-3" />
@@ -341,13 +299,13 @@
                             <div className="space-y-3">
                                 <h3 className="text-sm font-semibold text-white">Uploaded Documents ({docs.length})</h3>
                                 {docs.map(doc => (
-                                    <div key={doc.id} className="flex items-start gap-4 p-4 bg-gray-900 border border-gray-800 rounded-xl">
-                                        <div className="w-10 h-10 rounded-lg bg-blue-600/20 flex items-center justify-center">
+                                    <div key={doc.id} className="flex items-start gap-3 md:gap-4 p-3 md:p-4 bg-gray-900 border border-gray-800 rounded-xl">
+                                        <div className="w-10 h-10 rounded-lg bg-blue-600/20 flex items-center justify-center flex-shrink-0">
                                             <i className="fa-solid fa-file text-blue-500"></i>
                                         </div>
-                                        <div className="flex-1">
+                                        <div className="flex-1 min-w-0">
                                             <h4 className="text-sm font-semibold text-white">{doc.name}</h4>
-                                            <p className="text-xs text-gray-400 mt-1">{doc.content.substring(0, 80)}...</p>
+                                            <p className="text-xs text-gray-400 mt-1 truncate">{doc.content.substring(0, 80)}...</p>
                                         </div>
                                     </div>
                                 ))}
@@ -361,43 +319,43 @@
         // Security Page
         const SecurityPage = () => (
             <div className="flex flex-col h-full bg-gray-950">
-                <header className="h-16 border-b border-gray-800 flex items-center px-6 bg-gray-900/50">
+                <header className="h-16 border-b border-gray-800 flex items-center px-4 md:px-6 bg-gray-900/50">
                     <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-lg bg-blue-600/20 flex items-center justify-center">
                             <i className="fa-solid fa-shield-halved text-blue-500"></i>
                         </div>
                         <div>
                             <h2 className="text-lg font-semibold text-white">Security Logs</h2>
-                            <p className="text-xs text-gray-400">Monitor system events</p>
+                            <p className="text-xs text-gray-400 hidden sm:block">Monitor system events</p>
                         </div>
                     </div>
                 </header>
-                <div className="flex-1 overflow-y-auto p-6">
-                    <div className="grid grid-cols-4 gap-4 mb-6">
-                        <div className="p-4 bg-gray-900 border border-gray-800 rounded-xl text-center">
-                            <p className="text-2xl font-bold text-white">{securityLogs.length}</p>
-                            <p className="text-sm text-gray-400">Total Events</p>
+                <div className="flex-1 overflow-y-auto p-4 md:p-6">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6">
+                        <div className="p-3 md:p-4 bg-gray-900 border border-gray-800 rounded-xl text-center">
+                            <p className="text-xl md:text-2xl font-bold text-white">{securityLogs.length}</p>
+                            <p className="text-xs md:text-sm text-gray-400">Total Events</p>
                         </div>
-                        <div className="p-4 bg-gray-900 border border-gray-800 rounded-xl text-center">
-                            <p className="text-2xl font-bold text-blue-400">{securityLogs.filter(l => l.type === 'info').length}</p>
-                            <p className="text-sm text-gray-400">Info</p>
+                        <div className="p-3 md:p-4 bg-gray-900 border border-gray-800 rounded-xl text-center">
+                            <p className="text-xl md:text-2xl font-bold text-blue-400">{securityLogs.filter(l => l.type === 'info').length}</p>
+                            <p className="text-xs md:text-sm text-gray-400">Info</p>
                         </div>
-                        <div className="p-4 bg-gray-900 border border-gray-800 rounded-xl text-center">
-                            <p className="text-2xl font-bold text-yellow-400">{securityLogs.filter(l => l.type === 'warning').length}</p>
-                            <p className="text-sm text-gray-400">Warnings</p>
+                        <div className="p-3 md:p-4 bg-gray-900 border border-gray-800 rounded-xl text-center">
+                            <p className="text-xl md:text-2xl font-bold text-yellow-400">{securityLogs.filter(l => l.type === 'warning').length}</p>
+                            <p className="text-xs md:text-sm text-gray-400">Warnings</p>
                         </div>
-                        <div className="p-4 bg-gray-900 border border-gray-800 rounded-xl text-center">
-                            <p className="text-2xl font-bold text-red-400">{securityLogs.filter(l => l.type === 'error').length}</p>
-                            <p className="text-sm text-gray-400">Errors</p>
+                        <div className="p-3 md:p-4 bg-gray-900 border border-gray-800 rounded-xl text-center">
+                            <p className="text-xl md:text-2xl font-bold text-red-400">{securityLogs.filter(l => l.type === 'error').length}</p>
+                            <p className="text-xs md:text-sm text-gray-400">Errors</p>
                         </div>
                     </div>
                     <div className="space-y-2">
                         {securityLogs.map(log => (
-                            <div key={log.id} className="flex items-center gap-4 p-4 bg-gray-900 border border-gray-800 rounded-xl">
-                                <i className={`fa-solid ${log.type === 'error' ? 'fa-circle-exclamation' : log.type === 'warning' ? 'fa-triangle-exclamation' : log.type === 'success' ? 'fa-check-circle' : 'fa-circle-info'} ${log.type === 'error' ? 'text-red-400' : log.type === 'warning' ? 'text-yellow-400' : log.type === 'success' ? 'text-green-400' : 'text-blue-400'}`}></i>
-                                <div className="flex-1">
+                            <div key={log.id} className="flex items-start gap-3 md:gap-4 p-3 md:p-4 bg-gray-900 border border-gray-800 rounded-xl">
+                                <i className={`fa-solid ${log.type === 'error' ? 'fa-circle-exclamation' : log.type === 'warning' ? 'fa-triangle-exclamation' : log.type === 'success' ? 'fa-check-circle' : 'fa-circle-info'} ${log.type === 'error' ? 'text-red-400' : log.type === 'warning' ? 'text-yellow-400' : log.type === 'success' ? 'text-green-400' : 'text-blue-400'} flex-shrink-0`}></i>
+                                <div className="flex-1 min-w-0">
                                     <p className="text-sm font-medium text-white">{log.message}</p>
-                                    <p className="text-xs text-gray-500 mt-1">{log.timestamp} - {log.user}</p>
+                                    <p className="text-xs text-gray-500 mt-1 truncate">{log.timestamp} - {log.user}</p>
                                 </div>
                             </div>
                         ))}
@@ -466,60 +424,60 @@
             
             return (
                 <div className="flex flex-col h-full bg-gray-950">
-                    <header className="h-16 border-b border-gray-800 flex items-center px-6 bg-gray-900/50">
+                    <header className="h-16 border-b border-gray-800 flex items-center px-4 md:px-6 bg-gray-900/50">
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-lg bg-blue-600/20 flex items-center justify-center">
                                 <i className="fa-solid fa-chart-bar text-blue-500"></i>
                             </div>
                             <div>
                                 <h2 className="text-lg font-semibold text-white">Analytics Dashboard</h2>
-                                <p className="text-xs text-gray-400">AI performance metrics</p>
+                                <p className="text-xs text-gray-400 hidden sm:block">AI performance metrics</p>
                             </div>
                         </div>
                     </header>
-                    <div className="flex-1 overflow-y-auto p-6 space-y-6">
-                        <div className="grid grid-cols-4 gap-4">
-                            <div className="p-4 bg-gray-900 border border-gray-800 rounded-xl">
-                                <div className="flex items-center justify-between mb-3">
-                                    <div className="w-10 h-10 rounded-lg bg-blue-600/20 flex items-center justify-center"><i className="fa-solid fa-comments text-blue-500"></i></div>
+                    <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 md:space-y-6">
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+                            <div className="p-3 md:p-4 bg-gray-900 border border-gray-800 rounded-xl">
+                                <div className="flex items-center justify-between mb-2 md:mb-3">
+                                    <div className="w-8 md:w-10 h-8 md:h-10 rounded-lg bg-blue-600/20 flex items-center justify-center"><i className="fa-solid fa-comments text-blue-500 text-xs md:text-sm"></i></div>
                                     <span className="text-xs text-green-400 font-medium">+{analyticsData.summary.totalInquiries.change}%</span>
                                 </div>
-                                <p className="text-2xl font-bold text-white">{analyticsData.summary.totalInquiries.value}</p>
-                                <p className="text-sm text-gray-400">Total Inquiries</p>
+                                <p className="text-xl md:text-2xl font-bold text-white">{analyticsData.summary.totalInquiries.value}</p>
+                                <p className="text-xs md:text-sm text-gray-400">Total Inquiries</p>
                             </div>
-                            <div className="p-4 bg-gray-900 border border-gray-800 rounded-xl">
-                                <div className="flex items-center justify-between mb-3">
-                                    <div className="w-10 h-10 rounded-lg bg-green-600/20 flex items-center justify-center"><i className="fa-solid fa-check-circle text-green-500"></i></div>
+                            <div className="p-3 md:p-4 bg-gray-900 border border-gray-800 rounded-xl">
+                                <div className="flex items-center justify-between mb-2 md:mb-3">
+                                    <div className="w-8 md:w-10 h-8 md:h-10 rounded-lg bg-green-600/20 flex items-center justify-center"><i className="fa-solid fa-check-circle text-green-500 text-xs md:text-sm"></i></div>
                                     <span className="text-xs text-green-400 font-medium">+{analyticsData.summary.aiResolved.change}%</span>
                                 </div>
-                                <p className="text-2xl font-bold text-white">{analyticsData.summary.aiResolved.value}</p>
-                                <p className="text-sm text-gray-400">AI Resolved</p>
+                                <p className="text-xl md:text-2xl font-bold text-white">{analyticsData.summary.aiResolved.value}</p>
+                                <p className="text-xs md:text-sm text-gray-400">AI Resolved</p>
                             </div>
-                            <div className="p-4 bg-gray-900 border border-gray-800 rounded-xl">
-                                <div className="flex items-center justify-between mb-3">
-                                    <div className="w-10 h-10 rounded-lg bg-red-600/20 flex items-center justify-center"><i className="fa-solid fa-exclamation-triangle text-red-500"></i></div>
+                            <div className="p-3 md:p-4 bg-gray-900 border border-gray-800 rounded-xl">
+                                <div className="flex items-center justify-between mb-2 md:mb-3">
+                                    <div className="w-8 md:w-10 h-8 md:h-10 rounded-lg bg-red-600/20 flex items-center justify-center"><i className="fa-solid fa-exclamation-triangle text-red-500 text-xs md:text-sm"></i></div>
                                     <span className="text-xs text-green-400 font-medium">{analyticsData.summary.humanEscalations.change}%</span>
                                 </div>
-                                <p className="text-2xl font-bold text-white">{analyticsData.summary.humanEscalations.value}</p>
-                                <p className="text-sm text-gray-400">Human Escalations</p>
+                                <p className="text-xl md:text-2xl font-bold text-white">{analyticsData.summary.humanEscalations.value}</p>
+                                <p className="text-xs md:text-sm text-gray-400">Human Escalations</p>
                             </div>
-                            <div className="p-4 bg-gray-900 border border-gray-800 rounded-xl">
-                                <div className="flex items-center justify-between mb-3">
-                                    <div className="w-10 h-10 rounded-lg bg-purple-600/20 flex items-center justify-center"><i className="fa-solid fa-percentage text-purple-500"></i></div>
+                            <div className="p-3 md:p-4 bg-gray-900 border border-gray-800 rounded-xl">
+                                <div className="flex items-center justify-between mb-2 md:mb-3">
+                                    <div className="w-8 md:w-10 h-8 md:h-10 rounded-lg bg-purple-600/20 flex items-center justify-center"><i className="fa-solid fa-percentage text-purple-500 text-xs md:text-sm"></i></div>
                                     <span className="text-xs text-green-400 font-medium">+{analyticsData.summary.successRate.change}%</span>
                                 </div>
-                                <p className="text-2xl font-bold text-white">{analyticsData.summary.successRate.value}%</p>
-                                <p className="text-sm text-gray-400">Success Rate</p>
+                                <p className="text-xl md:text-2xl font-bold text-white">{analyticsData.summary.successRate.value}%</p>
+                                <p className="text-xs md:text-sm text-gray-400">Success Rate</p>
                             </div>
                         </div>
-                        <div className="grid grid-cols-2 gap-6">
-                            <div className="p-6 bg-gray-900 border border-gray-800 rounded-xl">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+                            <div className="p-4 md:p-6 bg-gray-900 border border-gray-800 rounded-xl">
                                 <h3 className="text-lg font-semibold text-white mb-4">Daily Inquiries</h3>
-                                <div style={{ height: '250px' }}><canvas id="barChart"></canvas></div>
+                                <div style={{ height: '200px' }}><canvas id="barChart"></canvas></div>
                             </div>
-                            <div className="p-6 bg-gray-900 border border-gray-800 rounded-xl">
+                            <div className="p-4 md:p-6 bg-gray-900 border border-gray-800 rounded-xl">
                                 <h3 className="text-lg font-semibold text-white mb-4">Resolution Ratio</h3>
-                                <div style={{ height: '250px' }}><canvas id="pieChart"></canvas></div>
+                                <div style={{ height: '200px' }}><canvas id="pieChart"></canvas></div>
                             </div>
                         </div>
                     </div>
@@ -532,20 +490,20 @@
             const [darkMode, setDarkMode] = useState(true);
             return (
                 <div className="flex flex-col h-full bg-gray-950">
-                    <header className="h-16 border-b border-gray-800 flex items-center px-6 bg-gray-900/50">
+                    <header className="h-16 border-b border-gray-800 flex items-center px-4 md:px-6 bg-gray-900/50">
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-lg bg-blue-600/20 flex items-center justify-center">
                                 <i className="fa-solid fa-gear text-blue-500"></i>
                             </div>
                             <div>
                                 <h2 className="text-lg font-semibold text-white">Settings</h2>
-                                <p className="text-xs text-gray-400">Configure dashboard</p>
+                                <p className="text-xs text-gray-400 hidden sm:block">Configure dashboard</p>
                             </div>
                         </div>
                     </header>
-                    <div className="flex-1 overflow-y-auto p-6">
-                        <div className="max-w-3xl space-y-6">
-                            <div className="p-6 bg-gray-900 border border-gray-800 rounded-xl">
+                    <div className="flex-1 overflow-y-auto p-4 md:p-6">
+                        <div className="max-w-3xl space-y-4 md:space-y-6">
+                            <div className="p-4 md:p-6 bg-gray-900 border border-gray-800 rounded-xl">
                                 <div className="flex items-center gap-3 mb-4"><i className="fa-solid fa-moon text-blue-500"></i><h3 className="text-lg font-semibold text-white">Appearance</h3></div>
                                 <div className="flex items-center justify-between">
                                     <div><p className="text-sm font-medium text-white">Dark Mode</p><p className="text-xs text-gray-400">Use dark theme</p></div>
@@ -554,13 +512,13 @@
                                     </button>
                                 </div>
                             </div>
-                            <div className="p-6 bg-gray-900 border border-gray-800 rounded-xl">
+                            <div className="p-4 md:p-6 bg-gray-900 border border-gray-800 rounded-xl">
                                 <div className="flex items-center gap-3 mb-4"><i className="fa-solid fa-key text-blue-500"></i><h3 className="text-lg font-semibold text-white">API Configuration</h3></div>
-                                <div><label className="text-sm font-medium text-white">Gemini API Key</label><div className="flex gap-2 mt-2"><input type="password" placeholder="Enter your API key" className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white" /><button className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm">Save</button></div></div>
+                                <div><label className="text-sm font-medium text-white">Gemini API Key</label><div className="flex flex-col sm:flex-row gap-2 mt-2"><input type="password" placeholder="Enter your API key" className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white" /><button className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm">Save</button></div></div>
                             </div>
-                            <div className="p-6 bg-gray-900 border border-gray-800 rounded-xl">
+                            <div className="p-4 md:p-6 bg-gray-900 border border-gray-800 rounded-xl">
                                 <div className="flex items-center gap-3 mb-4"><i className="fa-solid fa-lock text-blue-500"></i><h3 className="text-lg font-semibold text-white">Security</h3></div>
-                                <div className="flex items-center justify-between"><div><p className="text-sm font-medium text-white">Two-Factor Authentication</p><p className="text-xs text-gray-400">Add extra security</p></div><button className="px-4 py-2 bg-gray-700 text-white rounded-lg text-sm">Enable</button></div>
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3"><div><p className="text-sm font-medium text-white">Two-Factor Authentication</p><p className="text-xs text-gray-400">Add extra security</p></div><button className="px-4 py-2 bg-gray-700 text-white rounded-lg text-sm">Enable</button></div>
                             </div>
                         </div>
                     </div>
@@ -571,6 +529,16 @@
         // Main App
         const App = () => {
             const [activePage, setActivePage] = useState('chat');
+            const [sidebarOpen, setSidebarOpen] = useState(false);
+            
+            const menuItems = [
+                { id: 'chat', icon: 'fa-comments', label: 'Live Agent' },
+                { id: 'knowledge', icon: 'fa-book', label: 'Knowledge Base' },
+                { id: 'security', icon: 'fa-shield-halved', label: 'Security Logs' },
+                { id: 'analytics', icon: 'fa-chart-bar', label: 'Analytics' },
+                { id: 'settings', icon: 'fa-gear', label: 'Settings' },
+            ];
+            
             const renderPage = () => {
                 switch(activePage) {
                     case 'chat': return <ChatPage />;
@@ -583,8 +551,49 @@
             };
             return (
                 <div className="flex h-screen bg-gray-950">
-                    <Sidebar activePage={activePage} setActivePage={setActivePage} />
-                    <main className="flex-1 flex flex-col overflow-hidden">{renderPage()}</main>
+                    {/* Mobile sidebar overlay */}
+                    {sidebarOpen && (
+                        <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setSidebarOpen(false)}></div>
+                    )}
+                    <aside className={`fixed lg:relative z-50 h-full bg-gray-900 border-r border-gray-800 flex flex-col transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} w-64`}>
+                        <div className="h-16 flex items-center px-6 border-b border-gray-800">
+                            <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center mr-3">
+                                <i className="fa-solid fa-robot text-white text-sm"></i>
+                            </div>
+                            <span className="text-lg font-bold text-white">Omniguard</span>
+                            <button onClick={() => setSidebarOpen(false)} className="ml-auto lg:hidden text-gray-400">
+                                <i className="fa-solid fa-times"></i>
+                            </button>
+                        </div>
+                        <nav className="flex-1 p-4 space-y-2">
+                            {menuItems.map(item => (
+                                <button key={item.id} onClick={() => { setActivePage(item.id); setSidebarOpen(false); }}
+                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${activePage === item.id ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}>
+                                    <i className={`fa-solid ${item.icon} w-5`}></i>
+                                    {item.label}
+                                </button>
+                            ))}
+                        </nav>
+                        <div className="p-4 border-t border-gray-800">
+                            <div className="flex items-center gap-3 p-3 bg-gray-800 rounded-xl">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold">
+                                    {currentUser.name.charAt(0)}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium text-white truncate">{currentUser.name}</p>
+                                    <p className="text-xs text-gray-400 truncate">{currentUser.email}</p>
+                                </div>
+                                <button className="text-gray-400 hover:text-white"><i className="fa-solid fa-right-from-bracket"></i></button>
+                            </div>
+                        </div>
+                    </aside>
+                    <main className="flex-1 flex flex-col overflow-hidden pl-12 lg:pl-0">
+                        {/* Mobile menu button */}
+                        <button onClick={() => setSidebarOpen(true)} className="lg:hidden fixed top-4 left-4 z-30 p-2 bg-gray-800 rounded-lg text-white">
+                            <i className="fa-solid fa-bars"></i>
+                        </button>
+                        {renderPage()}
+                    </main>
                 </div>
             );
         };
