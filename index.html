@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -38,7 +38,6 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
         
-        // Knowledge Base
         const knowledgeBase = {
             documents: [
                 { id: 1, name: "Pricing Guide", content: "Basic Plan: $29/mo. Pro Plan: $99/mo. Enterprise: Custom pricing." },
@@ -54,10 +53,8 @@
             }
         };
         
-        // User Info
-        const currentUser = { name: "Isaac Njine", email: "isaacnjine741@gmail.com", role: "Admin" };
+        const currentUser = { name: "Isaac", email: "isaacnjine741@gmail.com", role: "Admin" };
         
-        // Analytics Data
         const analyticsData = {
             summary: {
                 totalInquiries: { value: 325, change: 12 },
@@ -80,7 +77,6 @@
             ]
         };
         
-        // Security Logs
         const securityLogs = [
             { id: 1, type: 'success', message: 'User login successful', timestamp: '2024-01-15 09:23:45', user: 'isaac@omniguard.com' },
             { id: 2, type: 'info', message: 'API key validated', timestamp: '2024-01-15 09:24:12', user: 'System' },
@@ -90,86 +86,53 @@
             { id: 6, type: 'success', message: 'Refund processed', timestamp: '2024-01-15 09:28:44', user: 'System' },
         ];
         
-        // AI Response System
         const getAIResponse = (input, kbResults) => {
             const query = input.toLowerCase();
-            
-            // Guardrails - block dangerous requests
             const dangerous = ['hack', 'crack', 'bypass', 'steal', 'delete all', 'illegal'];
             if (dangerous.some(d => query.includes(d))) {
                 return "I can't help with that request. Please contact a human manager for security-related concerns.";
             }
-            
-            // Check Knowledge Base first
             if (kbResults.length > 0) {
                 return kbResults[0].content;
             }
-            
-            // Order Status
             if (query.includes('order status') || query.includes('track order') || query.includes('where is my order')) {
                 const statuses = ['SHIPPED - Expected delivery in 2-3 business days', 'PROCESSING - Preparing for shipment', 'DELIVERED - Successfully delivered', 'PENDING - Awaiting shipment'];
                 return `I'd be happy to check that for you! Based on our system, your order #${Math.floor(Math.random() * 90000) + 10000} is currently: ${statuses[Math.floor(Math.random() * statuses.length)]}\n\nWould you like more details about shipping times?`;
             }
-            
-            // Refund
             if (query.includes('refund') || query.includes('money back') || query.includes('cancel order')) {
                 return `I can help with refunds!\n\nOur refund policy:\n• Full refund within 30 days\n• Processing takes 5-7 business days\n• Refunds go to original payment method\n\nTo process a refund, I'll need your order ID and reason. Would you like to proceed?`;
             }
-            
-            // Pricing
             if (query.includes('pricing') || query.includes('price') || query.includes('cost') || query.includes('plans') || query.includes('subscription')) {
                 return `Here's our pricing structure:\n\n• Basic Plan: $29/month\n  - 1,000 AI conversations\n  - Basic support\n\n• Pro Plan: $99/month\n  - Unlimited conversations\n  - Advanced analytics\n  - Priority support\n\n• Enterprise: Custom pricing\n  - Dedicated support\n  - Custom integrations\n\nWhich plan interests you?`;
             }
-            
-            // Shipping
             if (query.includes('shipping') || query.includes('delivery') || query.includes('shipping time')) {
                 return `Here are our shipping options:\n\n• Standard: 5-7 business days\n• Express: 2-3 business days\n• Overnight: Next business day\n• International: 10-14 business days\n\nIs there anything else you'd like to know?`;
             }
-            
-            // Account
             if (query.includes('account') || query.includes('login') || query.includes('password') || query.includes('profile')) {
                 return `For account-related issues, I can help with:\n\n• Password reset\n• Account verification\n• Profile updates\n• Security settings\n\nWhat specific issue are you experiencing?`;
             }
-            
-            // Security
             if (query.includes('security') || query.includes('hack') || query.includes('suspicious') || query.includes('2fa')) {
                 return `Security is our top priority!\n\nAvailable security features:\n• Two-Factor Authentication (2FA)\n• Password requirements: 12+ characters, mixed case, numbers\n• Session timeout after 30 minutes\n\nWould you like to enable any of these features?`;
             }
-            
-            // Technical Support
             if (query.includes('error') || query.includes('bug') || query.includes('not working') || query.includes('technical')) {
                 return `I can help troubleshoot technical issues.\n\nCommon solutions:\n1. Clear browser cache\n2. Disable VPN\n3. Try a different browser\n4. Check our status page for outages\n\nIf the issue persists, I can escalate to our technical team. What specific error are you seeing?`;
             }
-            
-            // Billing
             if (query.includes('billing') || query.includes('payment') || query.includes('invoice') || query.includes('charge')) {
                 return `I can help with billing concerns:\n\n• Payment methods\n• Invoice history\n• Upgrade/downgrade plans\n• Cancel subscription\n\nWhat billing matter can I assist you with?`;
             }
-            
-            // Greetings
             if (query.includes('hello') || query.includes('hi') || query.includes('hey') || query.includes('good morning') || query.includes('good afternoon')) {
                 return `Hello! I'm your Omniguard AI Assistant. 😊\n\nI can help you with:\n• Order status and tracking\n• Refunds and cancellations\n• Pricing and plans\n• Technical support\n• Billing inquiries\n• Account management\n• Security settings\n\nWhat can I help you with today?`;
             }
-            
-            // Thanks
             if (query.includes('thank') || query.includes('thanks')) {
                 return `You're welcome! 😊 Is there anything else I can help you with?`;
             }
-            
-            // Help
             if (query.includes('help') || query.includes('what can you do') || query.includes('capabilities')) {
                 return `I'm Omniguard's AI assistant, here to help! I can assist with:\n\n📦 Orders: Check status, track, cancel\n💰 Refunds: Process, inquire about status\n💳 Billing: Payments, invoices, plans\n🔐 Security: 2FA, passwords, settings\n🔧 Technical: Troubleshooting, errors\n📚 Knowledge: Our policies and guides\n\nJust type your question and I'll do my best to help!`;
             }
-            
-            // Default intelligent response
-            return `I understand you're asking about "${input}". As Omniguard's AI assistant, I can help with orders, refunds, pricing, technical support, and more.\n\nCould you provide more details about what you need help with? For example:\n• "Check my order status"
-• "Process a refund"
-• "What are your pricing plans?"
-• "I have a technical issue"`;
+            return `I understand you're asking about "${input}". As Omniguard's AI assistant, I can help with orders, refunds, pricing, technical support, and more.\n\nCould you provide more details about what you need help with? For example:\n• "Check my order status"\n• "Process a refund"\n• "What are your pricing plans?"\n• "I have a technical issue"`;
         };
         
-        // Chat Page
-        const ChatPage = () => {
+        const ChatPage = ({ darkMode }) => {
             const [messages, setMessages] = useState([
                 { id: 1, role: 'assistant', content: "Hello! I'm your Omniguard AI Assistant. 😊\n\nI can help you with orders, refunds, pricing, technical support, billing, and more. Just type your question and I'll assist you!", timestamp: new Date() }
             ]);
@@ -195,20 +158,20 @@
             };
             
             return (
-                <div className="flex flex-col h-full bg-gray-950">
-                    <header className="h-16 border-b border-gray-800 flex items-center px-4 md:px-6 bg-gray-900/50">
+                <div className={`flex flex-col h-full ${darkMode ? 'bg-gray-950' : 'bg-gray-100'}`}>
+                    <header className={`h-16 border-b flex items-center px-4 md:px-6 ${darkMode ? 'bg-gray-900/50 border-gray-800' : 'bg-white border-gray-200'}`}>
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-lg bg-blue-600/20 flex items-center justify-center">
                                 <i className="fa-solid fa-comments text-blue-500"></i>
                             </div>
                             <div>
-                                <h2 className="text-lg font-semibold text-white">Live Agent</h2>
-                                <p className="text-xs text-gray-400 hidden sm:block">AI-powered customer support</p>
+                                <h2 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Live Agent</h2>
+                                <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'} hidden sm:block`}>AI-powered customer support</p>
                             </div>
                         </div>
                         <div className="ml-auto flex items-center gap-2">
                             <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                            <span className="text-sm text-gray-400 hidden sm:inline">Online</span>
+                            <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'} hidden sm:inline`}>Online</span>
                         </div>
                     </header>
                     <div className="flex-1 overflow-y-auto p-3 md:p-6 space-y-4">
@@ -219,9 +182,9 @@
                                         <i className="fa-solid fa-robot text-white text-sm"></i>
                                     </div>
                                 )}
-                                <div className={`max-w-[85%] md:max-w-[70%] p-3 md:p-4 rounded-2xl ${msg.role === 'user' ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-100'}`}>
+                                <div className={`max-w-[85%] md:max-w-[70%] p-3 md:p-4 rounded-2xl ${msg.role === 'user' ? 'bg-blue-600 text-white' : darkMode ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-900 border border-gray-200'}`}>
                                     <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-                                    <p className="text-xs text-gray-500 mt-2 hidden sm:block">{msg.timestamp.toLocaleTimeString()}</p>
+                                    <p className={`text-xs mt-2 ${darkMode ? 'text-gray-500' : 'text-gray-400'} hidden sm:block`}>{msg.timestamp.toLocaleTimeString()}</p>
                                 </div>
                                 {msg.role === 'user' && (
                                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0 text-white font-bold text-sm">
@@ -230,13 +193,12 @@
                                 )}
                             </div>
                         ))}
-                        {/* Typing animation */}
                         {isTyping && (
                             <div className="flex gap-4 justify-start">
                                 <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
                                     <i className="fa-solid fa-robot text-white text-sm"></i>
                                 </div>
-                                <div className="bg-gray-800 p-4 rounded-2xl">
+                                <div className={`p-4 rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'}`}>
                                     <div className="flex gap-1">
                                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
                                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay:'150ms'}}></div>
@@ -247,10 +209,10 @@
                         )}
                         <div ref={chatEndRef}></div>
                     </div>
-                    <div className="p-3 md:p-4 border-t border-gray-800 bg-gray-900/50">
+                    <div className={`p-3 md:p-4 border-t ${darkMode ? 'border-gray-800 bg-gray-900/50' : 'border-gray-200 bg-white'}`}>
                         <div className="flex gap-3">
                             <input type="text" value={input} onChange={e => setInput(e.target.value)} onKeyPress={e => e.key === 'Enter' && sendMessage()}
-                                placeholder="Type your message..." className="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500" />
+                                placeholder="Type your message..." className={`flex-1 border rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 ${darkMode ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-500' : 'bg-gray-100 border-gray-300 text-gray-900 placeholder-gray-400'}`} />
                             <button onClick={sendMessage} className="px-4 md:px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors">
                                 <i className="fa-solid fa-paper-plane"></i>
                             </button>
@@ -260,8 +222,7 @@
             );
         };
         
-        // Knowledge Page
-        const KnowledgePage = () => {
+        const KnowledgePage = ({ darkMode }) => {
             const [docs, setDocs] = useState(knowledgeBase.documents);
             const [newDocName, setNewDocName] = useState('');
             const [newDocContent, setNewDocContent] = useState('');
@@ -274,38 +235,38 @@
             };
             
             return (
-                <div className="flex flex-col h-full bg-gray-950">
-                    <header className="h-16 border-b border-gray-800 flex items-center px-4 md:px-6 bg-gray-900/50">
+                <div className={`flex flex-col h-full ${darkMode ? 'bg-gray-950' : 'bg-gray-100'}`}>
+                    <header className={`h-16 border-b flex items-center px-4 md:px-6 ${darkMode ? 'bg-gray-900/50 border-gray-800' : 'bg-white border-gray-200'}`}>
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-lg bg-blue-600/20 flex items-center justify-center">
                                 <i className="fa-solid fa-book text-blue-500"></i>
                             </div>
                             <div>
-                                <h2 className="text-lg font-semibold text-white">Knowledge Base</h2>
-                                <p className="text-xs text-gray-400 hidden sm:block">Manage AI training documents</p>
+                                <h2 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Knowledge Base</h2>
+                                <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'} hidden sm:block`}>Manage AI training documents</p>
                             </div>
                         </div>
                     </header>
                     <div className="flex-1 overflow-y-auto p-4 md:p-6">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-                            <div className="p-4 md:p-6 bg-gray-900 border border-gray-800 rounded-xl">
-                                <h3 className="text-sm font-semibold text-white mb-4">Add New Document</h3>
+                            <div className={`p-4 md:p-6 border rounded-xl ${darkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+                                <h3 className={`text-sm font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Add New Document</h3>
                                 <input type="text" placeholder="Document name" value={newDocName} onChange={e => setNewDocName(e.target.value)}
-                                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white mb-3" />
+                                    className={`w-full border rounded-lg px-4 py-2 text-sm mb-3 ${darkMode ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-500' : 'bg-gray-100 border-gray-300 text-gray-900 placeholder-gray-400'}`} />
                                 <textarea placeholder="Document content..." value={newDocContent} onChange={e => setNewDocContent(e.target.value)} rows={3}
-                                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white mb-3" />
+                                    className={`w-full border rounded-lg px-4 py-2 text-sm mb-3 ${darkMode ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-500' : 'bg-gray-100 border-gray-300 text-gray-900 placeholder-gray-400'}`} />
                                 <button onClick={addDoc} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm">Save Document</button>
                             </div>
                             <div className="space-y-3">
-                                <h3 className="text-sm font-semibold text-white">Uploaded Documents ({docs.length})</h3>
+                                <h3 className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Uploaded Documents ({docs.length})</h3>
                                 {docs.map(doc => (
-                                    <div key={doc.id} className="flex items-start gap-3 md:gap-4 p-3 md:p-4 bg-gray-900 border border-gray-800 rounded-xl">
+                                    <div key={doc.id} className={`flex items-start gap-3 md:gap-4 p-3 md:p-4 border rounded-xl ${darkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
                                         <div className="w-10 h-10 rounded-lg bg-blue-600/20 flex items-center justify-center flex-shrink-0">
                                             <i className="fa-solid fa-file text-blue-500"></i>
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <h4 className="text-sm font-semibold text-white">{doc.name}</h4>
-                                            <p className="text-xs text-gray-400 mt-1 truncate">{doc.content.substring(0, 80)}...</p>
+                                            <h4 className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{doc.name}</h4>
+                                            <p className={`text-xs mt-1 truncate ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{doc.content.substring(0, 80)}...</p>
                                         </div>
                                     </div>
                                 ))}
@@ -316,46 +277,45 @@
             );
         };
         
-        // Security Page
-        const SecurityPage = () => (
-            <div className="flex flex-col h-full bg-gray-950">
-                <header className="h-16 border-b border-gray-800 flex items-center px-4 md:px-6 bg-gray-900/50">
+        const SecurityPage = ({ darkMode }) => (
+            <div className={`flex flex-col h-full ${darkMode ? 'bg-gray-950' : 'bg-gray-100'}`}>
+                <header className={`h-16 border-b flex items-center px-4 md:px-6 ${darkMode ? 'bg-gray-900/50 border-gray-800' : 'bg-white border-gray-200'}`}>
                     <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-lg bg-blue-600/20 flex items-center justify-center">
                             <i className="fa-solid fa-shield-halved text-blue-500"></i>
                         </div>
                         <div>
-                            <h2 className="text-lg font-semibold text-white">Security Logs</h2>
-                            <p className="text-xs text-gray-400 hidden sm:block">Monitor system events</p>
+                            <h2 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Security Logs</h2>
+                            <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'} hidden sm:block`}>Monitor system events</p>
                         </div>
                     </div>
                 </header>
                 <div className="flex-1 overflow-y-auto p-4 md:p-6">
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6">
-                        <div className="p-3 md:p-4 bg-gray-900 border border-gray-800 rounded-xl text-center">
-                            <p className="text-xl md:text-2xl font-bold text-white">{securityLogs.length}</p>
-                            <p className="text-xs md:text-sm text-gray-400">Total Events</p>
+                        <div className={`p-3 md:p-4 border rounded-xl text-center ${darkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+                            <p className={`text-xl md:text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{securityLogs.length}</p>
+                            <p className={`text-xs md:text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Total Events</p>
                         </div>
-                        <div className="p-3 md:p-4 bg-gray-900 border border-gray-800 rounded-xl text-center">
+                        <div className={`p-3 md:p-4 border rounded-xl text-center ${darkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
                             <p className="text-xl md:text-2xl font-bold text-blue-400">{securityLogs.filter(l => l.type === 'info').length}</p>
-                            <p className="text-xs md:text-sm text-gray-400">Info</p>
+                            <p className={`text-xs md:text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Info</p>
                         </div>
-                        <div className="p-3 md:p-4 bg-gray-900 border border-gray-800 rounded-xl text-center">
+                        <div className={`p-3 md:p-4 border rounded-xl text-center ${darkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
                             <p className="text-xl md:text-2xl font-bold text-yellow-400">{securityLogs.filter(l => l.type === 'warning').length}</p>
-                            <p className="text-xs md:text-sm text-gray-400">Warnings</p>
+                            <p className={`text-xs md:text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Warnings</p>
                         </div>
-                        <div className="p-3 md:p-4 bg-gray-900 border border-gray-800 rounded-xl text-center">
+                        <div className={`p-3 md:p-4 border rounded-xl text-center ${darkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
                             <p className="text-xl md:text-2xl font-bold text-red-400">{securityLogs.filter(l => l.type === 'error').length}</p>
-                            <p className="text-xs md:text-sm text-gray-400">Errors</p>
+                            <p className={`text-xs md:text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Errors</p>
                         </div>
                     </div>
                     <div className="space-y-2">
                         {securityLogs.map(log => (
-                            <div key={log.id} className="flex items-start gap-3 md:gap-4 p-3 md:p-4 bg-gray-900 border border-gray-800 rounded-xl">
+                            <div key={log.id} className={`flex items-start gap-3 md:gap-4 p-3 md:p-4 border rounded-xl ${darkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
                                 <i className={`fa-solid ${log.type === 'error' ? 'fa-circle-exclamation' : log.type === 'warning' ? 'fa-triangle-exclamation' : log.type === 'success' ? 'fa-check-circle' : 'fa-circle-info'} ${log.type === 'error' ? 'text-red-400' : log.type === 'warning' ? 'text-yellow-400' : log.type === 'success' ? 'text-green-400' : 'text-blue-400'} flex-shrink-0`}></i>
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium text-white">{log.message}</p>
-                                    <p className="text-xs text-gray-500 mt-1 truncate">{log.timestamp} - {log.user}</p>
+                                    <p className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{log.message}</p>
+                                    <p className={`text-xs mt-1 truncate ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{log.timestamp} - {log.user}</p>
                                 </div>
                             </div>
                         ))}
@@ -364,8 +324,7 @@
             </div>
         );
         
-        // Analytics Page
-        const AnalyticsPage = () => {
+        const AnalyticsPage = ({ darkMode }) => {
             const barRef = useRef(null);
             const pieRef = useRef(null);
             
@@ -373,6 +332,9 @@
                 if (typeof Chart === 'undefined') return;
                 if (barRef.current) barRef.current.destroy();
                 if (pieRef.current) pieRef.current.destroy();
+                
+                const textColor = darkMode ? '#9ca3af' : '#6b7280';
+                const gridColor = darkMode ? '#374151' : '#e5e7eb';
                 
                 const barCtx = document.getElementById('barChart');
                 if (barCtx) {
@@ -395,8 +357,8 @@
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
-                            plugins: { legend: { labels: { color: '#9ca3af' } } },
-                            scales: { x: { ticks: { color: '#9ca3af' }, grid: { color: '#374151' } }, y: { ticks: { color: '#9ca3af' }, grid: { color: '#374151' } } }
+                            plugins: { legend: { labels: { color: textColor } } },
+                            scales: { x: { ticks: { color: textColor }, grid: { color: gridColor } }, y: { ticks: { color: textColor }, grid: { color: gridColor } } }
                         }
                     });
                 }
@@ -416,67 +378,67 @@
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
-                            plugins: { legend: { position: 'bottom', labels: { color: '#9ca3af' } } }
+                            plugins: { legend: { position: 'bottom', labels: { color: textColor } } }
                         }
                     });
                 }
-            }, []);
+            }, [darkMode]);
             
             return (
-                <div className="flex flex-col h-full bg-gray-950">
-                    <header className="h-16 border-b border-gray-800 flex items-center px-4 md:px-6 bg-gray-900/50">
+                <div className={`flex flex-col h-full ${darkMode ? 'bg-gray-950' : 'bg-gray-100'}`}>
+                    <header className={`h-16 border-b flex items-center px-4 md:px-6 ${darkMode ? 'bg-gray-900/50 border-gray-800' : 'bg-white border-gray-200'}`}>
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-lg bg-blue-600/20 flex items-center justify-center">
                                 <i className="fa-solid fa-chart-bar text-blue-500"></i>
                             </div>
                             <div>
-                                <h2 className="text-lg font-semibold text-white">Analytics Dashboard</h2>
-                                <p className="text-xs text-gray-400 hidden sm:block">AI performance metrics</p>
+                                <h2 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Analytics Dashboard</h2>
+                                <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'} hidden sm:block`}>AI performance metrics</p>
                             </div>
                         </div>
                     </header>
                     <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 md:space-y-6">
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-                            <div className="p-3 md:p-4 bg-gray-900 border border-gray-800 rounded-xl">
+                            <div className={`p-3 md:p-4 border rounded-xl ${darkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
                                 <div className="flex items-center justify-between mb-2 md:mb-3">
                                     <div className="w-8 md:w-10 h-8 md:h-10 rounded-lg bg-blue-600/20 flex items-center justify-center"><i className="fa-solid fa-comments text-blue-500 text-xs md:text-sm"></i></div>
                                     <span className="text-xs text-green-400 font-medium">+{analyticsData.summary.totalInquiries.change}%</span>
                                 </div>
-                                <p className="text-xl md:text-2xl font-bold text-white">{analyticsData.summary.totalInquiries.value}</p>
-                                <p className="text-xs md:text-sm text-gray-400">Total Inquiries</p>
+                                <p className={`text-xl md:text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{analyticsData.summary.totalInquiries.value}</p>
+                                <p className={`text-xs md:text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Total Inquiries</p>
                             </div>
-                            <div className="p-3 md:p-4 bg-gray-900 border border-gray-800 rounded-xl">
+                            <div className={`p-3 md:p-4 border rounded-xl ${darkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
                                 <div className="flex items-center justify-between mb-2 md:mb-3">
                                     <div className="w-8 md:w-10 h-8 md:h-10 rounded-lg bg-green-600/20 flex items-center justify-center"><i className="fa-solid fa-check-circle text-green-500 text-xs md:text-sm"></i></div>
                                     <span className="text-xs text-green-400 font-medium">+{analyticsData.summary.aiResolved.change}%</span>
                                 </div>
-                                <p className="text-xl md:text-2xl font-bold text-white">{analyticsData.summary.aiResolved.value}</p>
-                                <p className="text-xs md:text-sm text-gray-400">AI Resolved</p>
+                                <p className={`text-xl md:text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{analyticsData.summary.aiResolved.value}</p>
+                                <p className={`text-xs md:text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>AI Resolved</p>
                             </div>
-                            <div className="p-3 md:p-4 bg-gray-900 border border-gray-800 rounded-xl">
+                            <div className={`p-3 md:p-4 border rounded-xl ${darkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
                                 <div className="flex items-center justify-between mb-2 md:mb-3">
                                     <div className="w-8 md:w-10 h-8 md:h-10 rounded-lg bg-red-600/20 flex items-center justify-center"><i className="fa-solid fa-exclamation-triangle text-red-500 text-xs md:text-sm"></i></div>
                                     <span className="text-xs text-green-400 font-medium">{analyticsData.summary.humanEscalations.change}%</span>
                                 </div>
-                                <p className="text-xl md:text-2xl font-bold text-white">{analyticsData.summary.humanEscalations.value}</p>
-                                <p className="text-xs md:text-sm text-gray-400">Human Escalations</p>
+                                <p className={`text-xl md:text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{analyticsData.summary.humanEscalations.value}</p>
+                                <p className={`text-xs md:text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Human Escalations</p>
                             </div>
-                            <div className="p-3 md:p-4 bg-gray-900 border border-gray-800 rounded-xl">
+                            <div className={`p-3 md:p-4 border rounded-xl ${darkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
                                 <div className="flex items-center justify-between mb-2 md:mb-3">
                                     <div className="w-8 md:w-10 h-8 md:h-10 rounded-lg bg-purple-600/20 flex items-center justify-center"><i className="fa-solid fa-percentage text-purple-500 text-xs md:text-sm"></i></div>
                                     <span className="text-xs text-green-400 font-medium">+{analyticsData.summary.successRate.change}%</span>
                                 </div>
-                                <p className="text-xl md:text-2xl font-bold text-white">{analyticsData.summary.successRate.value}%</p>
-                                <p className="text-xs md:text-sm text-gray-400">Success Rate</p>
+                                <p className={`text-xl md:text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{analyticsData.summary.successRate.value}%</p>
+                                <p className={`text-xs md:text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Success Rate</p>
                             </div>
                         </div>
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-                            <div className="p-4 md:p-6 bg-gray-900 border border-gray-800 rounded-xl">
-                                <h3 className="text-lg font-semibold text-white mb-4">Daily Inquiries</h3>
+                            <div className={`p-4 md:p-6 border rounded-xl ${darkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+                                <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Daily Inquiries</h3>
                                 <div style={{ height: '200px' }}><canvas id="barChart"></canvas></div>
                             </div>
-                            <div className="p-4 md:p-6 bg-gray-900 border border-gray-800 rounded-xl">
-                                <h3 className="text-lg font-semibold text-white mb-4">Resolution Ratio</h3>
+                            <div className={`p-4 md:p-6 border rounded-xl ${darkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+                                <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Resolution Ratio</h3>
                                 <div style={{ height: '200px' }}><canvas id="pieChart"></canvas></div>
                             </div>
                         </div>
@@ -485,40 +447,38 @@
             );
         };
         
-        // Settings Page
-        const SettingsPage = () => {
-            const [darkMode, setDarkMode] = useState(true);
+        const SettingsPage = ({ darkMode, setDarkMode }) => {
             return (
-                <div className="flex flex-col h-full bg-gray-950">
-                    <header className="h-16 border-b border-gray-800 flex items-center px-4 md:px-6 bg-gray-900/50">
+                <div className={`flex flex-col h-full ${darkMode ? 'bg-gray-950' : 'bg-gray-50'}`}>
+                    <header className={`h-16 border-b flex items-center px-4 md:px-6 ${darkMode ? 'bg-gray-900/50 border-gray-800' : 'bg-white border-gray-200'}`}>
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-lg bg-blue-600/20 flex items-center justify-center">
                                 <i className="fa-solid fa-gear text-blue-500"></i>
                             </div>
                             <div>
-                                <h2 className="text-lg font-semibold text-white">Settings</h2>
-                                <p className="text-xs text-gray-400 hidden sm:block">Configure dashboard</p>
+                                <h2 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Settings</h2>
+                                <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'} hidden sm:block`}>Configure dashboard</p>
                             </div>
                         </div>
                     </header>
-                    <div className="flex-1 overflow-y-auto p-4 md:p-6">
+                    <div className={`flex-1 overflow-y-auto p-4 md:p-6 ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}>
                         <div className="max-w-3xl space-y-4 md:space-y-6">
-                            <div className="p-4 md:p-6 bg-gray-900 border border-gray-800 rounded-xl">
-                                <div className="flex items-center gap-3 mb-4"><i className="fa-solid fa-moon text-blue-500"></i><h3 className="text-lg font-semibold text-white">Appearance</h3></div>
+                            <div className={`p-4 md:p-6 border rounded-xl ${darkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+                                <div className="flex items-center gap-3 mb-4"><i className="fa-solid fa-moon text-blue-500"></i><h3 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Appearance</h3></div>
                                 <div className="flex items-center justify-between">
-                                    <div><p className="text-sm font-medium text-white">Dark Mode</p><p className="text-xs text-gray-400">Use dark theme</p></div>
-                                    <button onClick={() => setDarkMode(!darkMode)} className={`w-12 h-6 rounded-full relative ${darkMode ? 'bg-blue-600' : 'bg-gray-700'}`}>
-                                        <div className={`absolute w-5 h-5 rounded-full bg-white top-0.5 transition-transform ${darkMode ? 'right-0.5' : 'left-0.5'}`}></div>
+                                    <div><p className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>Dark Mode</p><p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Use dark theme</p></div>
+                                    <button onClick={() => setDarkMode(!darkMode)} className={`w-12 h-6 rounded-full relative transition-colors ${darkMode ? 'bg-blue-600' : 'bg-gray-300'}`}>
+                                        <div className={`absolute w-5 h-5 rounded-full bg-white top-0.5 transition-transform shadow ${darkMode ? 'right-0.5' : 'left-0.5'}`}></div>
                                     </button>
                                 </div>
                             </div>
-                            <div className="p-4 md:p-6 bg-gray-900 border border-gray-800 rounded-xl">
-                                <div className="flex items-center gap-3 mb-4"><i className="fa-solid fa-key text-blue-500"></i><h3 className="text-lg font-semibold text-white">API Configuration</h3></div>
-                                <div><label className="text-sm font-medium text-white">Gemini API Key</label><div className="flex flex-col sm:flex-row gap-2 mt-2"><input type="password" placeholder="Enter your API key" className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white" /><button className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm">Save</button></div></div>
+                            <div className={`p-4 md:p-6 border rounded-xl ${darkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+                                <div className="flex items-center gap-3 mb-4"><i className="fa-solid fa-key text-blue-500"></i><h3 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>API Configuration</h3></div>
+                                <div><label className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>Gemini API Key</label><div className="flex flex-col sm:flex-row gap-2 mt-2"><input type="password" placeholder="Enter your API key" className={`flex-1 border rounded-lg px-4 py-2 text-sm ${darkMode ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-500' : 'bg-gray-100 border-gray-300 text-gray-900 placeholder-gray-400'}`} /><button className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm">Save</button></div></div>
                             </div>
-                            <div className="p-4 md:p-6 bg-gray-900 border border-gray-800 rounded-xl">
-                                <div className="flex items-center gap-3 mb-4"><i className="fa-solid fa-lock text-blue-500"></i><h3 className="text-lg font-semibold text-white">Security</h3></div>
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3"><div><p className="text-sm font-medium text-white">Two-Factor Authentication</p><p className="text-xs text-gray-400">Add extra security</p></div><button className="px-4 py-2 bg-gray-700 text-white rounded-lg text-sm">Enable</button></div>
+                            <div className={`p-4 md:p-6 border rounded-xl ${darkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+                                <div className="flex items-center gap-3 mb-4"><i className="fa-solid fa-lock text-blue-500"></i><h3 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Security</h3></div>
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3"><div><p className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>Two-Factor Authentication</p><p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Add extra security</p></div><button className="px-4 py-2 bg-gray-700 text-white rounded-lg text-sm">Enable</button></div>
                             </div>
                         </div>
                     </div>
@@ -526,10 +486,10 @@
             );
         };
         
-        // Main App
         const App = () => {
             const [activePage, setActivePage] = useState('chat');
             const [sidebarOpen, setSidebarOpen] = useState(false);
+            const [darkMode, setDarkMode] = useState(true);
             
             const menuItems = [
                 { id: 'chat', icon: 'fa-comments', label: 'Live Agent' },
@@ -541,26 +501,26 @@
             
             const renderPage = () => {
                 switch(activePage) {
-                    case 'chat': return <ChatPage />;
-                    case 'knowledge': return <KnowledgePage />;
-                    case 'security': return <SecurityPage />;
-                    case 'analytics': return <AnalyticsPage />;
-                    case 'settings': return <SettingsPage />;
-                    default: return <ChatPage />;
+                    case 'chat': return <ChatPage darkMode={darkMode} />;
+                    case 'knowledge': return <KnowledgePage darkMode={darkMode} />;
+                    case 'security': return <SecurityPage darkMode={darkMode} />;
+                    case 'analytics': return <AnalyticsPage darkMode={darkMode} />;
+                    case 'settings': return <SettingsPage darkMode={darkMode} setDarkMode={setDarkMode} />;
+                    default: return <ChatPage darkMode={darkMode} />;
                 }
             };
+            
             return (
-                <div className="flex h-screen bg-gray-950">
-                    {/* Mobile sidebar overlay */}
+                <div className={`flex h-screen ${darkMode ? 'bg-gray-950' : 'bg-gray-100'}`}>
                     {sidebarOpen && (
                         <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setSidebarOpen(false)}></div>
                     )}
-                    <aside className={`fixed lg:relative z-50 h-full bg-gray-900 border-r border-gray-800 flex flex-col transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} w-64`}>
-                        <div className="h-16 flex items-center px-6 border-b border-gray-800">
+                    <aside className={`fixed lg:relative z-50 h-full border-r flex flex-col transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} w-64 ${darkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+                        <div className={`h-16 flex items-center px-6 border-b ${darkMode ? 'border-gray-800' : 'border-gray-200'}`}>
                             <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center mr-3">
                                 <i className="fa-solid fa-robot text-white text-sm"></i>
                             </div>
-                            <span className="text-lg font-bold text-white">Omniguard</span>
+                            <span className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Omniguard</span>
                             <button onClick={() => setSidebarOpen(false)} className="ml-auto lg:hidden text-gray-400">
                                 <i className="fa-solid fa-times"></i>
                             </button>
@@ -568,28 +528,27 @@
                         <nav className="flex-1 p-4 space-y-2">
                             {menuItems.map(item => (
                                 <button key={item.id} onClick={() => { setActivePage(item.id); setSidebarOpen(false); }}
-                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${activePage === item.id ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}>
+                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${activePage === item.id ? 'bg-blue-600 text-white' : darkMode ? 'text-gray-400 hover:bg-gray-800 hover:text-white' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}>
                                     <i className={`fa-solid ${item.icon} w-5`}></i>
                                     {item.label}
                                 </button>
                             ))}
                         </nav>
-                        <div className="p-4 border-t border-gray-800">
-                            <div className="flex items-center gap-3 p-3 bg-gray-800 rounded-xl">
+                        <div className={`p-4 border-t ${darkMode ? 'border-gray-800' : 'border-gray-200'}`}>
+                            <div className={`flex items-center gap-3 p-3 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
                                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold">
                                     {currentUser.name.charAt(0)}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium text-white truncate">{currentUser.name}</p>
-                                    <p className="text-xs text-gray-400 truncate">{currentUser.email}</p>
+                                    <p className={`text-sm font-medium truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>{currentUser.name}</p>
+                                    <p className={`text-xs truncate ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{currentUser.email}</p>
                                 </div>
-                                <button className="text-gray-400 hover:text-white"><i className="fa-solid fa-right-from-bracket"></i></button>
+                                <button className={`${darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-700'}`}><i className="fa-solid fa-right-from-bracket"></i></button>
                             </div>
                         </div>
                     </aside>
                     <main className="flex-1 flex flex-col overflow-hidden pl-12 lg:pl-0">
-                        {/* Mobile menu button */}
-                        <button onClick={() => setSidebarOpen(true)} className="lg:hidden fixed top-4 left-4 z-30 p-2 bg-gray-800 rounded-lg text-white">
+                        <button onClick={() => setSidebarOpen(true)} className={`lg:hidden fixed top-4 left-4 z-30 p-2 rounded-lg ${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900 border border-gray-200'}`}>
                             <i className="fa-solid fa-bars"></i>
                         </button>
                         {renderPage()}
@@ -598,7 +557,6 @@
             );
         };
         
-        // Render App
         ReactDOM.createRoot(document.getElementById('root')).render(<App />);
     </script>
 </body>
